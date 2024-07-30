@@ -105,7 +105,10 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-export const updateUser = async (req, res) => {
+export const updatePassword = async (req, res) => {
+  const { id } = req.params;
+  const { currentPassword, newPassword } = req.body;
+
   try {
     // Validate request body
     const errors = validationResult(req);
@@ -113,26 +116,35 @@ export const updateUser = async (req, res) => {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    const { id } = req.params;
-    const { first_name, email, password } = req.body;
+    // Check if the user ID from the token matches the user ID in the request parameters
+    if (req.userId !== parseInt(id, 10)) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorised" });
+    }
 
+    // Find the user by ID
     const user = await User.findByPk(id);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    user.first_name = first_name || user.first_name;
-    user.email = email || user.email;
-
-    if (password) {
-      user.password = await bcrypt.hash(password, 10);
+    // Check if the provided current password matches the stored password
+    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Incorrect current password" });
     }
 
+    // Hash the new password
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password
+    user.password = newHashedPassword;
     await user.save();
 
-    res.status(200).json({ message: "User updated successfully", user });
+    res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error updating password:", error);
     res.status(500).json({ error: error.message });
   }
 };
