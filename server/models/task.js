@@ -1,3 +1,5 @@
+// models/task.js
+
 const task = (sequelize, DataTypes) => {
   const Task = sequelize.define("Task", {
     title: {
@@ -5,14 +7,37 @@ const task = (sequelize, DataTypes) => {
       allowNull: false,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
-    completed: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    status: {
+      type: DataTypes.ENUM("pending", "completed"),
+      defaultValue: "pending",
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
   });
+
+  Task.associate = (models) => {
+    Task.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+  };
+
+  Task.prototype.toJSON = function () {
+    const values = Object.assign({}, this.get());
+
+    // Define the order of the fields
+    return {
+      id: values.id,
+      title: values.title,
+      description: values.description,
+      status: values.status,
+      userId: values.userId,
+      createdAt: values.createdAt,
+      updatedAt: values.updatedAt,
+    };
+  };
 
   return Task;
 };
