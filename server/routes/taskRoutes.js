@@ -1,13 +1,40 @@
-// routes/taskRoutes.js
-
 import express from "express";
-import { createTask, getTasks, updateTask, deleteTask } from "../controllers/taskController.js";
+import {
+  createTask,
+  getTasks,
+  getCompletedTasks,
+  updateTask,
+  deleteTask,
+} from "../controllers/taskController.js";
+import { body } from "express-validator";
 
 const router = express.Router();
 
-router.post("/", createTask);
+export const validateTask = [
+  body("title").notEmpty().withMessage("Please enter a title"),
+  body("description").notEmpty().withMessage("Please enter a description"),
+  body("status")
+    .notEmpty()
+    .isIn(["pending", "completed"])
+    .withMessage("Status must be either 'pending' or 'completed'"),
+];
+
+export const validateUpdateTask = [
+  body("title").optional().notEmpty().withMessage("Please enter a title"),
+  body("description")
+    .optional()
+    .notEmpty()
+    .withMessage("Please enter a description"),
+  body("status")
+    .optional()
+    .isIn(["pending", "completed"])
+    .withMessage("Status must be either 'pending' or 'completed'"),
+];
+
+router.post("/", validateTask, createTask);
 router.get("/", getTasks);
-router.put("/:id", updateTask);
+router.get("/completed", getCompletedTasks);
+router.put("/:id", validateUpdateTask, updateTask);
 router.delete("/:id", deleteTask);
 
 export default router;

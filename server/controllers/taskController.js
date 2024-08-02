@@ -1,15 +1,13 @@
-// controllers/taskController.js
-
 import db from "../models/index.js";
 
 const Task = db.Task;
 
 export const createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, status } = req.body;
     const userId = req.userId;
 
-    const newTask = await Task.create({ title, description, userId });
+    const newTask = await Task.create({ title, description, status, userId });
     res.status(201).json(newTask);
   } catch (error) {
     console.error("Error creating task:", error);
@@ -27,6 +25,17 @@ export const getTasks = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getCompletedTasks = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const tasks = await Task.findAll({ where: {userId, status: "completed"} });
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error("Error fetching completed tasks:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
 
 export const updateTask = async (req, res) => {
   try {
