@@ -8,11 +8,11 @@ const task = (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     status: {
       type: DataTypes.ENUM("pending", "completed"),
-      defaultValue: "pending",
+      allowNull: false
     },
     userId: {
       type: DataTypes.INTEGER,
