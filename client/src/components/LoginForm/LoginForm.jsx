@@ -97,7 +97,7 @@ const LoginForm = () => {
           )}
         </Formik>
         <p className="text-sm text-center text-gray-600">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
             Sign up
           </Link>
