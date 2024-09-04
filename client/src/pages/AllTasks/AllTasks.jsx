@@ -94,7 +94,7 @@ const AllTasks = () => {
         )}
         <div
           onClick={openCreateModal}
-          className="flex items-center justify-center bg-white border-2 border-dotted border-gray-300 rounded-md p-4 cursor-pointer"
+          className="flex items-center justify-center border-2 border-dotted border-gray-300 rounded-md p-4 cursor-pointer max-h-48"
         >
           <span className="text-4xl text-gray-400">+</span>
         </div>
