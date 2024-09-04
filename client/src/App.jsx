@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import Home from "./pages/Home/Home";
 import AllTasks from "./pages/AllTasks/AllTasks";
+import PendingTasks from "./pages/PendingTasks/PendingTasks";
 import CompletedTasks from "./pages/CompletedTasks/CompletedTasks";
 import PrivateRoute from "./services/PrivateRoute";
 import Layout from "./components/Layout/Layout";
@@ -29,6 +30,16 @@ function App() {
             <PrivateRoute>
               <Layout>
                 <AllTasks />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/pending"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <PendingTasks />
               </Layout>
             </PrivateRoute>
           }

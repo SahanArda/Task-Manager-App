@@ -3,6 +3,7 @@ import {
   createTask,
   getTasks,
   getCompletedTasks,
+  getPendingTasks,
   updateTask,
   deleteTask,
 } from "../controllers/taskController.js";
@@ -33,6 +34,7 @@ export const validateUpdateTask = [
 
 router.post("/", validateTask, createTask);
 router.get("/", getTasks);
+router.get("/pending", getPendingTasks);
 router.get("/completed", getCompletedTasks);
 router.put("/:id", validateUpdateTask, updateTask);
 router.delete("/:id", deleteTask);

@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import TaskCard from "../../components/TaskCard/TaskCard";
 import axios from "axios";
 import CreateTaskModal from "../../components/CreateTaskModal/CreateTaskModal";
+import EditTaskModal from "../../components/EditTaskModal/EditTaskModal";
 
 const AllTasks = () => {
   const [tasks, setTasks] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -25,17 +28,49 @@ const AllTasks = () => {
     fetchTasks();
   }, []);
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openCreateModal = () => {
+    setIsCreateModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const openEditModal = (taskId) => {
+    const task = tasks.find((task) => task.id === taskId);
+    setTaskToEdit(task);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setTaskToEdit(null);
   };
 
   const handleTaskCreated = (newTask) => {
     setTasks([...tasks, newTask]);
-    closeModal();
+    closeCreateModal();
+  };
+
+  const handleTaskUpdated = (updatedTask) => {
+    setTasks(
+      tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+    closeEditModal();
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:3000/tasks/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setTasks(tasks.filter((task) => task.id !== taskId));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
   return (
@@ -46,27 +81,39 @@ const AllTasks = () => {
           tasks.map((task) => (
             <TaskCard
               key={task.id}
+              id={task.id}
               title={task.title}
               description={task.description}
               status={task.status}
+              onEdit={openEditModal}
+              onDelete={handleDeleteTask}
             />
           ))
         ) : (
           <p>No tasks found.</p>
         )}
         <div
-          onClick={openModal}
+          onClick={openCreateModal}
           className="flex items-center justify-center bg-white border-2 border-dotted border-gray-300 rounded-md p-4 cursor-pointer"
         >
           <span className="text-4xl text-gray-400">+</span>
         </div>
       </div>
 
-      {isModalOpen && (
+      {isCreateModalOpen && (
         <CreateTaskModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
+          isOpen={isCreateModalOpen}
+          onClose={closeCreateModal}
           onTaskCreated={handleTaskCreated}
+        />
+      )}
+
+      {isEditModalOpen && taskToEdit && (
+        <EditTaskModal
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+          task={taskToEdit}
+          onTaskUpdated={handleTaskUpdated}
         />
       )}
     </div>

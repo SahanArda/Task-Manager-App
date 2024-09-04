@@ -32,6 +32,17 @@ export const getTasks = async (req, res) => {
   }
 };
 
+export const getPendingTasks = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const tasks = await Task.findAll({ where: { userId, status: "pending" } });
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error("Error fetching pending tasks:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getCompletedTasks = async (req, res) => {
   try {
     const userId = req.userId;

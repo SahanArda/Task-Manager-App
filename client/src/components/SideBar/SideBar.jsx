@@ -79,12 +79,8 @@ const Sidebar = () => {
         className="bg-white text-black shadow-xl z-[999] max-w-[16rem] w-[16rem] overflow-hidden md:relative fixed h-screen"
       >
         <div className="flex items-center gap-3 font-medium border-b py-3 border-slate-300 mx-3">
-          <img
-            src="https://img.icons8.com/color/512/firebase.png"
-            width={45}
-            alt="MASS"
-          />
-          <span className="text-xl whitespace-pre">MASS</span>
+          <img src="/favicon.ico" alt="logo" className="w-10 h-10" />
+          <span className="text-xl whitespace-pre">Task Manager</span>
         </div>
 
         <div className="flex flex-col h-full">
@@ -113,11 +109,11 @@ const Sidebar = () => {
               </li>
               <li>
                 <NavLink
-                  to="/toDoTasks"
+                  to="/pending"
                   className="link text-black flex items-center gap-3"
                 >
                   <SlEnergy size={23} className="min-w-max" />
-                  To Do Tasks
+                  Pending
                 </NavLink>
               </li>
               <li className="pb-3">
@@ -126,7 +122,7 @@ const Sidebar = () => {
                   className="link text-black flex items-center gap-3"
                 >
                   <SlCheck size={23} className="min-w-max" />
-                  Completed Tasks
+                  Completed
                 </NavLink>
               </li>
             </ul>

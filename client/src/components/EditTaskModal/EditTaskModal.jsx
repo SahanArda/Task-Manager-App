@@ -4,16 +4,14 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import axios from "axios";
 
-const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
+const EditTaskModal = ({ isOpen, onClose, task, onTaskUpdated }) => {
   useEffect(() => {
-    // Disable scrolling when the modal is open
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
 
-    // Cleanup on component unmount
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -21,9 +19,9 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
 
   const formik = useFormik({
     initialValues: {
-      title: "",
-      description: "",
-      status: "pending",
+      title: task?.title || "",
+      description: task?.description || "",
+      status: task?.status || "pending",
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Title is required"),
@@ -32,11 +30,11 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
         .oneOf(["pending", "completed"])
         .required("Status is required"),
     }),
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.post(
-          `http://localhost:3000/tasks`,
+        const response = await axios.put(
+          `http://localhost:3000/tasks/${task.id}`,
           values,
           {
             headers: {
@@ -44,11 +42,11 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
             },
           }
         );
-        onTaskCreated(response.data);
-        resetForm();
+        onTaskUpdated(response.data);
         setSubmitting(false);
+        onClose();
       } catch (error) {
-        console.error("Error creating task:", error);
+        console.error("Error updating task:", error);
         setSubmitting(false);
       }
     },
@@ -62,7 +60,7 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
     >
       <div className="bg-black/50 absolute inset-0" onClick={onClose}></div>
       <div className="bg-white rounded-md p-6 w-full max-w-md relative z-10">
-        <h3 className="text-2xl font-bold mb-4">Create New Task</h3>
+        <h3 className="text-2xl font-bold mb-4">Edit Task</h3>
         <form onSubmit={formik.handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
@@ -134,7 +132,7 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
               className="bg-blue-500 text-white px-4 py-2 rounded-md"
               disabled={formik.isSubmitting}
             >
-              {formik.isSubmitting ? "Creating..." : "Create Task"}
+              {formik.isSubmitting ? "Updating..." : "Update Task"}
             </button>
           </div>
         </form>
@@ -143,10 +141,11 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
   );
 };
 
-CreateTaskModal.propTypes = {
+EditTaskModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  onTaskCreated: PropTypes.func.isRequired,
+  task: PropTypes.object.isRequired,
+  onTaskUpdated: PropTypes.func.isRequired,
 };
 
-export default CreateTaskModal;
+export default EditTaskModal;
