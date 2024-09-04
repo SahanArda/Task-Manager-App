@@ -6,10 +6,12 @@ import db from "./models/index.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import auth from "./middleware/auth.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 
