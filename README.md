@@ -1,193 +1,197 @@
-# Headway Learning - Mental Health eLearning Platform
-
-Headway Learning is an informational eLearning platform focused on providing resources and educational content about mental health illnesses. The platform serves as a repository of detailed articles, multimedia, and descriptions of various mental health conditions.
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [API Documentation](#api-documentation)
-- [Database Models](#database-models)
-- [Frontend Overview](#frontend-overview)
-- [Contributing](#contributing)
-- [License](#license)
-
----
+# Task Manager
 
 ## Project Overview
 
-The goal of **Headway Learning** is to spread awareness and provide education about mental health illnesses through informative articles, videos, and other resources. The platform is designed to offer an accessible learning experience for anyone seeking information on mental health conditions.
+The Task Manager Application is a full-stack web application designed to help users efficiently manage their tasks. Built with a modern tech stack, it offers a seamless experience for task creation, editing, and deletion, all secured through robust authentication and authorisation techniques.
 
 ---
 
 ## Features
 
-- **Comprehensive Information**: Detailed pages about various mental health illnesses.
-- **Search Functionality**: Users can search and filter for specific mental health topics.
-- **Multimedia Support**: Video and other educational materials to enhance learning.
-- **Resource Links**: Links to external resources such as official health organizations and guides.
+- **User Authentication & Authorisation**: Secure user registration and login using JSON Web Tokens (JWT) to ensure that only authenticated users can access and manage their tasks.
+- **Task Management**: Authenticated users can view, create, edit and delete tasks.
+- **Responsive Design**: A user-friendly interface that adapts to various screen sizes, ensuring accessibility across devices.
 
 ---
 
 ## Technology Stack
 
-- **Backend**: Node.js, Express, PostgreSQL
-- **Frontend**: React
-- **Database**: PostgreSQL
-- **ORM**: TypeORM (for managing database operations)
+- **Backend**: Node.js, Express
+- **Frontend**: React, Tailwind
+- **Database**: MySQL
+- **ORM**: Sequalize (for managing database operations)
 - **Authentication**: JWT
 
 ---
 
 ## API Documentation
 
-### 1. **GET /api/illnesses**
+### 1. **POST /users/register**
 
-**Description**: Fetch a list of all mental health illnesses.
+**Description**: Register a new user.
+
+**Payload**:
+
+```json
+{
+    "first_name": "example",
+    "email": "example@outlook.com",
+    "password": "example123"
+}
+```
+
+### 2. POST /users/login
+
+**Description**: User login.
+
+**Payload**:
+
+```json
+{
+    "email": "example@outlook.com",
+    "password": "example123"
+}
+```
+
+### 3. GET /users
+
+**Description**: Retrieve all the users from the database.
 
 **Response**:
 
 ```json
 [
-  {
-    "id": 1,
-    "name": "Anxiety Disorder",
-    "description": "Detailed description about anxiety disorder",
-    "symptoms": "List of symptoms",
-    "treatments": "List of treatments",
-    "videoUrl": "http://youtube.com/example",
-    "resources": "http://example.com/resources"
-  }
+    {
+        "id": 1,
+        "first_name": "example",
+        "email": "example@outlook.com",
+        "createdAt": "2024-09-04T20:44:29.000Z",
+        "updatedAt": "2024-09-04T20:44:29.000Z"
+    },
+    {
+        "id": 2,
+        "first_name": "example2",
+        "email": "example2@hotmail.com",
+        "createdAt": "2025-02-07T14:49:32.000Z",
+        "updatedAt": "2025-02-07T14:49:32.000Z"
+    }
 ]
 ```
 
-### 2. POST /api/illnesses (Admin Only)
 
-**Description**: Add a new illness (requires admin privileges).
+### 4. DELETE /users/:id
 
-**Request**:
+**Description**: Delete an illness by ID.
+
+**Response**:
 
 ```json
-[
-  {
-  "name": "New Illness",
-  "description": "Description of the illness",
-  "symptoms": "List of symptoms",
-  "treatments": "List of treatments",
-  "videoUrl": "http://youtube.com/example",
-  "resources": "http://example.com/resources"
+{
+    "message": "User deleted successfully"
 }
-]
 ```
 
-### 3. PUT /api/illnesses/ (Admin Only)
+### 5. POST /tasks
 
-**Description**: Update the details of an existing illness by ID (requires admin privileges).
+**Description**: Creates a new task for the logged in user (requires JWT token in the header).
 
-**Request**:
+**Payload**:
 
 ```json
-[
-  {
-  "name": "Updated Illness Name",
-  "description": "Updated description",
-  "symptoms": "Updated symptoms",
-  "treatments": "Updated treatments",
-  "videoUrl": "http://youtube.com/example",
-  "resources": "http://example.com/resources"
+{
+    "title": "Task1",
+    "description": "This is a task",
+    "status": "completed"
 }
-]
 ```
 
+### 6. GET /tasks
 
-### 4. DELETE /api/illnesses/ (Admin Only)
-
-**Description**: Delete an illness by ID (requires admin privileges).
+**Description**: Retrieves all tasks belonging to the logged in user (requires JWT token in the header).
 
 **Response**:
 
 ```json
 [
-  {
-  "message": "Illness deleted successfully"
-}
+    {
+        "id": 1,
+        "title": "First Task",
+        "description": "This is my first task",
+        "status": "pending",
+        "userId": 1,
+        "createdAt": "2024-09-04T20:45:40.000Z",
+        "updatedAt": "2024-09-04T20:45:40.000Z"
+    },
+    {
+        "id": 2,
+        "title": "Read",
+        "description": "Read my book",
+        "status": "completed",
+        "userId": 1,
+        "createdAt": "2024-09-04T20:46:01.000Z",
+        "updatedAt": "2024-09-04T20:46:01.000Z"
+    }
 ]
 ```
 
+### 7. GET /tasks/completed
 
+**Description**: Retrieves all completed tasks belonging to the logged in user (requires JWT token in the header).
 
-## Database Models
+**Response**:
 
-### Illness Model
+```json
+[
+    {
+        "id": 2,
+        "title": "Read",
+        "description": "Read my book",
+        "status": "completed",
+        "userId": 1,
+        "createdAt": "2024-09-04T20:46:01.000Z",
+        "updatedAt": "2024-09-04T20:46:01.000Z"
+    }
+]
+```
 
-The **Illness** model contains all relevant information about a specific mental health illness.
+### 8. PUT /tasks/:id
 
-| Field         | Type      | Description                                      |
-|---------------|-----------|--------------------------------------------------|
-| `id`          | `integer` | Primary key                                      |
-| `name`        | `string`  | Name of the illness                              |
-| `description` | `text`    | Detailed description of the illness              |
-| `symptoms`    | `text`    | List of symptoms of the illness                  |
-| `treatments`  | `text`    | List of treatment methods                        |
-| `videoUrl`    | `string`  | Optional video link explaining the illness       |
-| `resources`   | `string`  | Optional external resources or links             |
+**Description**: Updates task using task id (requires JWT token in the header).
 
----
+**Response**:
 
-### Article Model (Optional)
+```json
+{
+    "id": 2,
+    "title": "Read",
+    "description": "read my book 30 pages a day",
+    "status": "completed",
+    "userId": 1,
+    "createdAt": "2024-09-04T20:46:01.000Z",
+    "updatedAt": "2025-02-07T15:14:52.992Z"
+}
+```
 
-The **Article** model allows additional articles or information pieces related to mental health to be stored and accessed by users.
+### 9. DELETE /tasks/:id
 
-| Field       | Type      | Description                                      |
-|-------------|-----------|--------------------------------------------------|
-| `id`        | `integer` | Primary key                                      |
-| `title`     | `string`  | Title of the article                             |
-| `content`   | `text`    | Main content of the article                      |
-| `illnessId` | `integer` | Foreign key that links to an illness (optional)  |
+**Description**: Deletes task using task id (requires JWT token in the header).
 
----
+**Response**:
 
-### Video Model (Optional)
-
-The **Video** model contains links to educational videos related to mental health illnesses.
-
-| Field       | Type      | Description                                      |
-|-------------|-----------|--------------------------------------------------|
-| `id`        | `integer` | Primary key                                      |
-| `title`     | `string`  | Title of the video                               |
-| `videoUrl`  | `string`  | URL of the video                                 |
-| `illnessId` | `integer` | Foreign key that links to an illness (optional)  |
-
-
-
-## Frontend Overview
-
-The frontend for **Headway Learning** will be built using **React** to provide an intuitive and user-friendly interface. The frontend will interact with the backend API to display information about mental health illnesses.
-
-### Key Pages
-
-- **Home Page**: Introduction to the platform and a listing of featured illnesses.
-- **Illness Detail Page**: Provides detailed information about each illness, including symptoms, treatments, and any available multimedia resources.
-- **Search and Filter**: Allows users to search for specific mental health conditions or filter by categories (e.g., anxiety, mood disorders, etc.).
-- **Resources Page**: Displays additional articles and links to external resources for users.
+```json
+{
+    "message": "Task deleted successfully"
+}
+```
 
 ---
 
-## Contributing
+## Future Improvements
 
-We welcome contributions to **Headway Learning**. If you would like to contribute, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature`).
-3. Commit your changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature/your-feature`).
-5. Open a pull request and describe the changes you've made.
+- **Due Dates and Reminders**: Enable users to assign due dates to tasks and receive reminders as deadlines approach.
+- **Search and Filter Options**: Implement search and filter capabilities to help users quickly locate specific tasks based on criteria such as status, priority, or due date.
+- **File Attachments**: Provide functionality for users to attach files or links to tasks, facilitating easy access to relevant documents or resources.
 
 ---
 
-## License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
-
-
+![Home Page](TaskManager.png)
